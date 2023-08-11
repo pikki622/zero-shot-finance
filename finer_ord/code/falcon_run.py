@@ -3,6 +3,7 @@ Falcon 7B Instruct: https://huggingface.co/tiiuae/falcon-7b-instruct
 Falcon 40B Instruct: https://huggingface.co/tiiuae/falcon-40b-instruct
 '''
 
+
 import os
 import torch
 import transformers
@@ -17,7 +18,7 @@ from datetime import date
 today = date.today()
 
 # set gpu
-os.environ["CUDA_VISIBLE_DEVICES"] = str("0")
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 print("Device assigned: ", device)
 
@@ -54,7 +55,7 @@ for index in range(grouped_df.shape[0]):
     sen = '\n'.join(token_list)
 
     prompt = "Discard all the previous instructions. Behave like you are an expert named entity identifier. Below a sentence is tokenized and each line contains a word token from the sentence. Identify 'Person', 'Location', and 'Organisation' from them and label them. If the entity is multi token use post-fix _B for the first label and _I for the remaining token labels for that particular entity. The start of the separate entity should always use _B post-fix for the label. If the token doesn't fit in any of those three categories or is not a named entity label it 'Other'. Do not combine words yourself. Use a colon to separate token and label. So the format should be token:label. \n\n" + sen
-    
+
     prompts_list.append(prompt)
 
 # documentation: https://huggingface.co/docs/transformers/v4.29.1/en/main_classes/text_generation

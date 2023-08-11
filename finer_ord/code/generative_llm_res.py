@@ -41,7 +41,7 @@ for file in files_xls:
 
     true_labels = []
     predicted_labels = []
-    
+
     for index in range(df.shape[0]):
 
         true_labels_temp = df.loc[[index],['true_label']].values[0, 0]
@@ -70,7 +70,7 @@ for file in files_xls:
                     predicted_labels.append(-1)
             except:
                 predicted_labels.append(-1)
-            sub_index_gold = sub_index_gold + 1
+            sub_index_gold += 1
 
 
 

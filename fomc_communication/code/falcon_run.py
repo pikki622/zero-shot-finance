@@ -3,6 +3,7 @@ Falcon 7B Instruct: https://huggingface.co/tiiuae/falcon-7b-instruct
 Falcon 40B Instruct: https://huggingface.co/tiiuae/falcon-40b-instruct
 '''
 
+
 import os
 import torch
 import transformers
@@ -18,7 +19,7 @@ today = date.today()
 seeds = [5768, 78516, 944601]
 
 # set gpu
-os.environ["CUDA_VISIBLE_DEVICES"] = str("0")
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 print("Device assigned: ", device)
 

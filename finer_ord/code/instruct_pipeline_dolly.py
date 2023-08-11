@@ -177,20 +177,18 @@ class InstructionTextGenerationPipeline(Pipeline):
 
                 fully_decoded = self.tokenizer.decode(sequence)
 
-                # The response appears after "### Response:".  The model has been trained to append "### End" at the
-                # end.
-                m = re.search(r"#+\s*Response:\s*(.+?)#+\s*End", fully_decoded, flags=re.DOTALL)
-
-                if m:
-                    decoded = m.group(1).strip()
+                if m := re.search(
+                    r"#+\s*Response:\s*(.+?)#+\s*End",
+                    fully_decoded,
+                    flags=re.DOTALL,
+                ):
+                    decoded = m[1].strip()
+                elif m := re.search(
+                    r"#+\s*Response:\s*(.+)", fully_decoded, flags=re.DOTALL
+                ):
+                    decoded = m[1].strip()
                 else:
-                    # The model might not generate the "### End" sequence before reaching the max tokens.  In this case,
-                    # return everything after "### Response:".
-                    m = re.search(r"#+\s*Response:\s*(.+)", fully_decoded, flags=re.DOTALL)
-                    if m:
-                        decoded = m.group(1).strip()
-                    else:
-                        logger.warn(f"Failed to find response in:\n{fully_decoded}")
+                    logger.warn(f"Failed to find response in:\n{fully_decoded}")
 
             # If the full text is requested, then append the decoded text to the original instruction.
             # This technically isn't the full text, as we format the instruction in the prompt the model has been

@@ -3,6 +3,7 @@ Add the model once obvious errors are fixed in next few weeks
 # https://huggingface.co/mosaicml/mpt-7b-instruct
 """
 
+
 import os
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, TextGenerationPipeline, AutoConfig
@@ -17,7 +18,7 @@ today = date.today()
 seeds = [5768, 78516, 944601]
 
 # set gpu
-os.environ["CUDA_VISIBLE_DEVICES"] = str("0")
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 print("Device assigned: ", device)
 
@@ -60,12 +61,10 @@ for seed in [5768, 78516, 944601]:
 
     res = generate_text(prompts_list, pad_token_id=tokenizer.eos_token_id)
 
-    output_list = []
-
-    for i in range(len(res)):
-        output_list.append([labels[i], sentences[i], res[i][0]['generated_text']])
-
-
+    output_list = [
+        [labels[i], sentences[i], res[i][0]['generated_text']]
+        for i in range(len(res))
+    ]
     results = pd.DataFrame(output_list, columns=["true_label", "original_sent", "text_output"])
     time_taken = int((time() - start_t)/60.0)
     results.to_csv(f'../data/llm_prompt_outputs/mpt7b_{seed}_{today.strftime("%d_%m_%Y")}_{time_taken}.csv', index=False)

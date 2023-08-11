@@ -3,6 +3,7 @@ Falcon 7B Instruct: https://huggingface.co/tiiuae/falcon-7b-instruct
 Falcon 40B Instruct: https://huggingface.co/tiiuae/falcon-40b-instruct
 '''
 
+
 import os
 import torch
 import transformers
@@ -18,7 +19,7 @@ today = date.today()
 seeds = [5768, 78516, 944601]
 
 # set gpu
-os.environ["CUDA_VISIBLE_DEVICES"] = str("0")
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 print("Device assigned: ", device)
 
@@ -37,6 +38,8 @@ pipeline = transformers.pipeline(
 
 
 
+# load test data
+data_category = "FPB-sentiment-analysis-allagree"
 for seed in [5768, 78516, 944601]: 
 
     # assign seed to numpy and PyTorch
@@ -44,9 +47,7 @@ for seed in [5768, 78516, 944601]:
     np.random.seed(seed) 
 
     start_t = time()
-    # load test data
-    data_category = "FPB-sentiment-analysis-allagree"
-    test_data_path = "../data/test/" + data_category + "-test" + "-" + str(seed) + ".xlsx"
+    test_data_path = f"../data/test/{data_category}-test-{str(seed)}.xlsx"
     data_df = pd.read_excel(test_data_path)
 
 
@@ -69,14 +70,15 @@ for seed in [5768, 78516, 944601]:
         )
 
 
-    output_list = []
-
-    for i in range(len(res)):
-        #print(res[i][0]['generated_text'][len(prompts_list[i]):])
-        output_list.append([labels[i], sentences[i], res[i][0]['generated_text'][len(prompts_list[i]):]])
-
-
+    output_list = [
+        [
+            labels[i],
+            sentences[i],
+            res[i][0]['generated_text'][len(prompts_list[i]) :],
+        ]
+        for i in range(len(res))
+    ]
     results = pd.DataFrame(output_list, columns=["true_label", "original_sent", "text_output"])
     time_taken = int((time() - start_t)/60.0)
-    
+
     results.to_csv(f'../data/llm_prompt_outputs/falcon_7b_{seed}_{today.strftime("%d_%m_%Y")}_{time_taken}.csv', index=False)
